@@ -25,7 +25,7 @@ jobs:
             sudo apt-get upgrade -y
 
             # Install necessary software
-            sudo apt-get install -y apache2 php mysql-server
+            sudo apt-get install -y apache2 php mysql-server libapache2-mod-php php-mysql
 
             # Download and extract WordPress
             sudo wget -P /var/www/html https://wordpress.org/latest.tar.gz
@@ -36,6 +36,14 @@ jobs:
             sudo chown -R www-data:www-data /var/www/html/
             sudo chmod -R 755 /var/www/html/
 
+            # Configure Apache to serve WordPress
+            sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/wordpress.conf
+            sudo sed -i 's/\/var\/www\/html/\/var\/www\/html\/wordpress/g' /etc/apache2/sites-available/wordpress.conf
+            sudo a2ensite wordpress.conf
+            sudo a2enmod rewrite
+            sudo systemctl reload apache2
+
             # Restart Apache
             sudo systemctl restart apache2
           EOF
+
